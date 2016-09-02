@@ -1,2 +1,5 @@
 bin/*
 .settings/*
+.classpath
+gen/*
+src/com/hearace/cloudfile/AppDefine.java
