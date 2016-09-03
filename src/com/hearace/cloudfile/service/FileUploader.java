@@ -122,27 +122,34 @@ public class FileUploader implements Runnable {
 					dbMgr.updateProgress(item.get_id(), pos, item.getMd5s());
 				}
 				FileInfo info = api.createSuperFile(item.getMd5s(), target);
-				dbMgr.delBackItem(item.get_id());
+//				dbMgr.delBackItem(item.get_id());
+				dbMgr.uploadSuccess(item.get_id());
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				dbMgr.uploadFail(item.get_id(), e.getMessage());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				dbMgr.uploadFail(item.get_id(), e.getMessage());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				dbMgr.uploadFail(item.get_id(), e.getMessage());
 			}
 		}else{
 			try {
 				api.uploadFile(target, item.getFileStr());
-				dbMgr.delBackItem(item.get_id());
+//				dbMgr.delBackItem(item.get_id());
+				dbMgr.uploadSuccess(item.get_id());
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				dbMgr.uploadFail(item.get_id(), e.getMessage());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				dbMgr.uploadFail(item.get_id(), e.getMessage());
 			}
 		}
 		return 1;

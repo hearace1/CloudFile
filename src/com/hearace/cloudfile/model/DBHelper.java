@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "cloudfile.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     public DBHelper(Context context) {
         //CursorFactory设置为null,使用默认�
@@ -23,7 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "isEnable BOOLEAN, LastProcessDate TIMESTAMP)");
         db.execSQL("CREATE TABLE IF NOT EXISTS FileBacklog" +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT, file VARCHAR, cloudpath VARCHAR, status INTEGER, retryNum INTEGER, locker VARCHAR, "
-                + "progress BIGINT, md5s VARCHAR)");
+                + "progress BIGINT, fileSZ BIGINT, md5s VARCHAR, errMsg VARCHAR)");
         db.execSQL("CREATE TABLE IF NOT EXISTS AppConfig" +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT, property VARCHAR, value VARCHAR)");
     }
@@ -31,8 +31,8 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
     	db.execSQL("ALTER TABLE FileBacklog " +
-                "ADD COLUMN progress BIGINT");
+                "ADD COLUMN errMsg VARCHAR");
     	db.execSQL("ALTER TABLE FileBacklog " +
-                "ADD COLUMN md5s VARCHAR");
+                "ADD COLUMN fileSZ BIGINT default -1");
     }
 }

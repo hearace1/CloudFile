@@ -46,6 +46,10 @@
             android:name=".TestActivity"
             android:label="@string/title_activity_test" >
         </activity>
+        <activity
+            android:name=".BackupItemActivity"
+            android:label="@string/title_activity_backup_item" >
+        </activity>
     </application>
 
 </manifest>

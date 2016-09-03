@@ -105,13 +105,8 @@ public class CloudService extends Service implements Task{
 		Log.d("CloudService", "completed one task");
 		switch (nextStep) {
 		case UPLOAD_FILE_STEP:
-			nextStep = RESET_LOCK;
 			Log.d("CloudService", "start upload files");
 			uploadFiles();
-			break;
-		case RESET_LOCK:
-			Log.d("CloudService", "do reset lock");
-			dbMgr.resetLock();
 			break;
 		default:
 			break;

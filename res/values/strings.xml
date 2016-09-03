@@ -104,4 +104,10 @@
         <item>59</item>
     </string-array>
 
+    <string name="title_activity_backup_item">Backup Item List</string>
+
+    <string name="startUpload">Start Upload</string>
+
+    <string name="stopUpload">Stop Upload</string>
+
 </resources>

@@ -16,6 +16,8 @@ public class DBManager {
     private SQLiteDatabase db;
     private static DBManager self = null;
     private static final int LOCK_STATUS = 1;
+    private static final int COMPLETED_STATUS = 100;
+    private static final int FAILED_STATUS = -1;
 
     private DBManager(Context context){
         helper = new DBHelper(context);
@@ -81,7 +83,7 @@ public class DBManager {
     	ContentValues cv = new ContentValues();
     	cv.put("status", LOCK_STATUS);
     	cv.put("locker", lockerId);
-    	int updateNum = db.update(BackupItem.TABLE_NAME, cv, "_id IN (select _id from FileBacklog where status = 0 limit 1)", null);
+    	int updateNum = db.update(BackupItem.TABLE_NAME, cv, "_id IN (select _id from FileBacklog where status < 1 limit 1)", null);
     	if(updateNum > 0){
         	Cursor c = db.rawQuery("select * from FileBacklog where locker = ?", new String[]{lockerId});
         	if(c.moveToNext())
@@ -90,9 +92,9 @@ public class DBManager {
    		return null;
     }
     
-    public void delBackItem(int id){
-    	db.delete(BackupItem.TABLE_NAME, "_id=?", new String[]{String.valueOf(id)});
-    }
+//    public void delBackItem(int id){
+//    	db.delete(BackupItem.TABLE_NAME, "_id=?", new String[]{String.valueOf(id)});
+//    }
 
     public void updateProgress(int itemId, long progress, String md5s){
     	ContentValues cv = new ContentValues();
@@ -101,10 +103,27 @@ public class DBManager {
     	db.update(BackupItem.TABLE_NAME, cv, "_id=?", new String[]{String.valueOf(itemId)});
     }
     
-    public void resetLock(){
+//    public void resetLock(){
+//    	ContentValues cv = new ContentValues();
+//    	cv.put("status", 0);
+//    	db.update(BackupItem.TABLE_NAME, cv, null, null);
+//    }
+    
+    public void uploadSuccess(int id){
     	ContentValues cv = new ContentValues();
-    	cv.put("status", 0);
-    	db.update(BackupItem.TABLE_NAME, cv, null, null);
+    	cv.put("status", COMPLETED_STATUS);
+    	db.update(BackupItem.TABLE_NAME, cv, "_id=?", new String[]{String.valueOf(id)});
+    }
+    
+    public void uploadFail(int id, String msg){
+    	ContentValues cv = new ContentValues();
+    	cv.put("status", FAILED_STATUS);
+    	cv.put("errMsg", msg);
+    	db.update(BackupItem.TABLE_NAME, cv, "_id=?", new String[]{String.valueOf(id)});
+    }
+    
+    public Cursor getUploadItems(){
+    	return db.rawQuery("select * from FileBacklog", null);
     }
     
     public Cursor getAllConfig(){
