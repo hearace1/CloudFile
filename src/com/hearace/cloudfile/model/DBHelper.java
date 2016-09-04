@@ -29,10 +29,13 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-    	db.execSQL("ALTER TABLE FileBacklog " +
-                "ADD COLUMN errMsg VARCHAR");
-    	db.execSQL("ALTER TABLE FileBacklog " +
-                "ADD COLUMN fileSZ BIGINT default -1");
+    public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
+    	if(oldV == 5){
+        	db.execSQL("ALTER TABLE FileBacklog " +
+                    "ADD COLUMN errMsg VARCHAR");
+        	db.execSQL("ALTER TABLE FileBacklog " +
+                    "ADD COLUMN fileSZ BIGINT default -1");
+    		
+    	}
     }
 }

@@ -110,4 +110,6 @@
 
     <string name="stopUpload">Stop Upload</string>
 
+    <string name="viewBakItemBtn">Show Backup Items</string>
+
 </resources>

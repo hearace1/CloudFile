@@ -211,5 +211,10 @@ public class MainActivity extends Activity implements OnCheckedChangeListener, O
 				.show();
 		enabledService = true;
 	}
+	
+	public void viewBakItemOnClick(View view){
+		Intent intent = new Intent(this, BackupItemActivity.class);
+		startActivity(intent);
+	}
 
 }
