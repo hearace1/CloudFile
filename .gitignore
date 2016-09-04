@@ -3,3 +3,4 @@ bin/*
 .classpath
 gen/*
 src/com/hearace/cloudfile/AppDefine.java
+*.apk
