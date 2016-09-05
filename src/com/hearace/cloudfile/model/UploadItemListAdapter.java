@@ -82,7 +82,7 @@ public class UploadItemListAdapter extends BaseAdapter {
 			viewHolder.uploadStatusTextView.setText("Completed");
 			break;
 		case -1:
-			progressPercent = (int) (progress / fileSZ);
+			progressPercent = (int) (progress / fileSZ) * 100;
 			viewHolder.uploadStatusTextView.setText("Failed");
 			String errMsg = cur.getString(cur.getColumnIndex("errMsg"));
 			viewHolder.errMsgTextView.setText(errMsg);

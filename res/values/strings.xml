@@ -112,4 +112,6 @@
 
     <string name="viewBakItemBtn">Show Backup Items</string>
 
+    <string name="resetBtn">Reset All</string>
+
 </resources>

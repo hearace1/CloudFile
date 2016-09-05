@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="5dp"
     tools:context="${relativePackage}.${activityClass}" >
 
     <LinearLayout
@@ -21,13 +22,22 @@
                 android:id="@+id/uploadStartBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="startBtnOnClick"
                 android:text="@string/startUpload" />
 
             <Button
                 android:id="@+id/stopUploadBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="stopBtnOnClick"
                 android:text="@string/stopUpload" />
+
+            <Button
+                android:id="@+id/resetBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="resetOnClick"
+                android:text="@string/resetBtn" />
 
         </LinearLayout>
 

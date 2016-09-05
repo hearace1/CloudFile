@@ -83,7 +83,7 @@ public class DBManager {
     	ContentValues cv = new ContentValues();
     	cv.put("status", LOCK_STATUS);
     	cv.put("locker", lockerId);
-    	int updateNum = db.update(BackupItem.TABLE_NAME, cv, "_id IN (select _id from FileBacklog where status < 1 limit 1)", null);
+    	int updateNum = db.update(BackupItem.TABLE_NAME, cv, "_id IN (select _id from FileBacklog where status = 0 limit 1)", null);
     	if(updateNum > 0){
         	Cursor c = db.rawQuery("select * from FileBacklog where locker = ?", new String[]{lockerId});
         	if(c.moveToNext())
@@ -124,6 +124,13 @@ public class DBManager {
     
     public Cursor getUploadItems(){
     	return db.rawQuery("select * from FileBacklog", null);
+    }
+    
+    public void resetFailedItems(){
+    	ContentValues cv = new ContentValues();
+    	cv.put("status", 0);
+
+    	db.update(BackupItem.TABLE_NAME, cv, "_id IN (select _id from FileBacklog where status = -1 or status = 1)", null);
     }
     
     public Cursor getAllConfig(){
