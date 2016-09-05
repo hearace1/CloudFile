@@ -58,6 +58,7 @@ public class BackupItemActivity extends Activity {
 		// TODO Auto-generated method stub
 		Log.d("BackupItemActivity", "onStart()");
 		super.onStart();
+		handler.post(new RefreshThread());
 		refreshList();
 	}
 
@@ -76,8 +77,6 @@ public class BackupItemActivity extends Activity {
 		if(sBinder != null && sBinder.isDownloading()){
 			startBtn.setEnabled(false);
 			stopBtn.setEnabled(true);
-			
-			handler.post(new RefreshThread());
 		}else{
 			startBtn.setEnabled(true);
 			stopBtn.setEnabled(false);
@@ -92,6 +91,7 @@ public class BackupItemActivity extends Activity {
 	
 	public void startBtnOnClick(View view){
 		sBinder.startDownload();
+		handler.post(new RefreshThread());
 	}
 	
 	public void stopBtnOnClick(View view){
@@ -113,8 +113,13 @@ public class BackupItemActivity extends Activity {
 	}
 	
 	class RefreshThread implements Runnable {
+		
 		public void run() {
-			if(sBinder != null && sBinder.isDownloading()){
+			if(sBinder == null){
+				handler.postDelayed(this, 1000);
+				return;
+			}
+			if(sBinder.isDownloading()){
 					refreshList();
 					handler.postDelayed(this, 5000);
 			}

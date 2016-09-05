@@ -102,7 +102,7 @@ public class CloudService extends Service implements Task {
 			if(uploader == null)
 				uploader = new FileUploader(dbMgr, this, this, handler);
 			uploader.setStop(false);
-			for (int i = 0; i < 2; i++) {
+			for (int i = 0; i < 1; i++) {
 				new Thread(tg, uploader).start();
 				try {
 					Thread.sleep(100);

@@ -23,7 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "isEnable BOOLEAN, LastProcessDate TIMESTAMP)");
         db.execSQL("CREATE TABLE IF NOT EXISTS FileBacklog" +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT, file VARCHAR, cloudpath VARCHAR, status INTEGER, retryNum INTEGER, locker VARCHAR, "
-                + "progress BIGINT, fileSZ BIGINT, md5s VARCHAR, errMsg VARCHAR)");
+                + "progress BIGINT, fileSZ BIGINT, md5s TEXT, errMsg VARCHAR)");
         db.execSQL("CREATE TABLE IF NOT EXISTS AppConfig" +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT, property VARCHAR, value VARCHAR)");
     }

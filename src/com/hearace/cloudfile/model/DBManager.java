@@ -112,6 +112,7 @@ public class DBManager {
     public void uploadSuccess(int id){
     	ContentValues cv = new ContentValues();
     	cv.put("status", COMPLETED_STATUS);
+    	cv.put("locker", "");
     	db.update(BackupItem.TABLE_NAME, cv, "_id=?", new String[]{String.valueOf(id)});
     }
     
@@ -119,6 +120,7 @@ public class DBManager {
     	ContentValues cv = new ContentValues();
     	cv.put("status", FAILED_STATUS);
     	cv.put("errMsg", msg);
+    	cv.put("locker", "");
     	db.update(BackupItem.TABLE_NAME, cv, "_id=?", new String[]{String.valueOf(id)});
     }
     
