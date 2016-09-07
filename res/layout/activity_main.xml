@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="5dp"
     tools:context="${relativePackage}.${activityClass}" >
 
     <LinearLayout
@@ -51,6 +52,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/viewBakItemBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="viewBakItemOnClick"
+                android:text="@string/viewBakItemBtn" />
 
             <FrameLayout
                 android:layout_width="fill_parent"
