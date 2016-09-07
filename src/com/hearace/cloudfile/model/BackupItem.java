@@ -17,6 +17,8 @@ public class BackupItem {
 	private int retryNum;
 	private String locker;
 	private long progress = 0L;
+	private long fileSZ = -1L;
+	private String errMsg = null;
 	private String md5s = "";
 	
 	public BackupItem(File file, String cloudpath, boolean isRegorFld) {
@@ -30,6 +32,7 @@ public class BackupItem {
 		this.status = 0;
 		this.retryNum = 0;
 		this.locker = null;
+		this.fileSZ = file.length();
 		Log.d("BackupItem", "create new item:"+this.toString());
 	}
 	
@@ -42,6 +45,8 @@ public class BackupItem {
 		this.locker = c.getString(c.getColumnIndex("locker"));
 		this.progress = c.getLong(c.getColumnIndex("progress"));
 		this.md5s = c.getString(c.getColumnIndex("md5s"));
+		this.fileSZ = c.getLong(c.getColumnIndex("fileSZ"));
+		this.errMsg = c.getString(c.getColumnIndex("errMsg"));
 	}
 	
 	
@@ -121,6 +126,7 @@ public class BackupItem {
         cv.put("cloudpath", this.cloudpath);
         cv.put("status", this.status);
         cv.put("retryNum", this.retryNum);
+        cv.put("fileSZ", this.fileSZ);
         return cv;
 	}
 }
