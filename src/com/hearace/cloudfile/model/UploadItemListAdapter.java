@@ -48,6 +48,11 @@ public class UploadItemListAdapter extends BaseAdapter {
 			return -1;
 		}
 	}
+	
+	public void updateDate(Cursor cur){
+		this.cur = cur;
+		this.notifyDataSetChanged();
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -79,18 +84,25 @@ public class UploadItemListAdapter extends BaseAdapter {
 		switch(status){
 		case 100:
 			progressPercent = 100;
+			viewHolder.errMsgTextView.setVisibility(TextView.GONE);
 			viewHolder.uploadStatusTextView.setText("Completed");
 			break;
 		case -1:
-			progressPercent = (int) (progress / fileSZ) * 100;
+			progressPercent = (int) (progress * 100 / fileSZ);
 			viewHolder.uploadStatusTextView.setText("Failed");
 			String errMsg = cur.getString(cur.getColumnIndex("errMsg"));
 			viewHolder.errMsgTextView.setText(errMsg);
 			viewHolder.errMsgTextView.setVisibility(TextView.VISIBLE);
 			break;
 		case 1:
-			progressPercent = (int) (progress / fileSZ);
+			progressPercent = (int) (progress * 100 / fileSZ);
+			viewHolder.errMsgTextView.setVisibility(TextView.GONE);
 			viewHolder.uploadStatusTextView.setText("Uploading");
+			break;
+		case 0:
+			progressPercent = 0;
+			viewHolder.uploadStatusTextView.setText("Wait");
+			viewHolder.errMsgTextView.setVisibility(TextView.GONE);
 			break;
 		}
 		viewHolder.uploadProgress.setProgress(progressPercent);

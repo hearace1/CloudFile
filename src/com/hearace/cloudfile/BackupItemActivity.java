@@ -26,14 +26,15 @@ public class BackupItemActivity extends Activity {
 	private ServiceBinder sBinder = null;
 	private Button startBtn = null;
 	private Button stopBtn = null;
+	private Button resetBtn = null;
 	private ServiceConnection connection = new ServiceConnection() {
-		
+
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			// TODO Auto-generated method stub
@@ -41,16 +42,22 @@ public class BackupItemActivity extends Activity {
 			sBinder = (ServiceBinder) service;
 		}
 	};
-	
+
 	private final Handler handler = new Handler();
+	private UploadItemListAdapter listApapter = null;
+	private DBManager dbMgr = null;
+	private boolean isStop = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_backup_item);
 		uploadFileList = (ListView) findViewById(R.id.uploadFileList);
-		startBtn = (Button)findViewById(R.id.uploadStartBtn);
-		stopBtn = (Button)findViewById(R.id.stopUploadBtn);
+		startBtn = (Button) findViewById(R.id.uploadStartBtn);
+		stopBtn = (Button) findViewById(R.id.stopUploadBtn);
+		resetBtn = (Button) findViewById(R.id.resetBtn);
 		bindService();
+		dbMgr = DBManager.getInstance(this);
 	}
 
 	@Override
@@ -67,38 +74,34 @@ public class BackupItemActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onStop();
 	}
-	
-	private void refreshList(){
-		DBManager dbMgr = DBManager.getInstance(this);
+
+	private void refreshList() {
 		Cursor cur = dbMgr.getUploadItems();
-		
-		UploadItemListAdapter listApapter = new UploadItemListAdapter(this, cur);
+		listApapter = new UploadItemListAdapter(this, cur);
 		uploadFileList.setAdapter(listApapter);
-		if(sBinder != null && sBinder.isDownloading()){
-			startBtn.setEnabled(false);
-			stopBtn.setEnabled(true);
-		}else{
-			startBtn.setEnabled(true);
-			stopBtn.setEnabled(false);
-		}
 	}
-	
-	private void bindService(){
+
+	private void bindService() {
 		Log.d("BackupItemActivity", "bindService()");
-		Intent bindIntent = new Intent(this, CloudService.class);		
-		bindService(bindIntent, connection, BIND_AUTO_CREATE );
+		Intent bindIntent = new Intent(this, CloudService.class);
+		bindService(bindIntent, connection, BIND_AUTO_CREATE);
 	}
-	
-	public void startBtnOnClick(View view){
+
+	public void startBtnOnClick(View view) {
+		startBtn.setEnabled(false);
+		resetBtn.setEnabled(false);
+		stopBtn.setEnabled(true);
 		sBinder.startDownload();
 		handler.post(new RefreshThread());
 	}
-	
-	public void stopBtnOnClick(View view){
+
+	public void stopBtnOnClick(View view) {
 		sBinder.stopDownload();
+		stopBtn.setEnabled(false);
+		isStop = true;
 	}
-	
-	public void resetOnClick(View view){
+
+	public void resetOnClick(View view) {
 		DBManager dbMgr = DBManager.getInstance(this);
 		dbMgr.resetFailedItems();
 		refreshList();
@@ -108,22 +111,30 @@ public class BackupItemActivity extends Activity {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		if(sBinder != null)
+		if (sBinder != null)
 			unbindService(connection);
 	}
-	
+
 	class RefreshThread implements Runnable {
-		
+
 		public void run() {
-			if(sBinder == null){
+			if (sBinder == null) {
 				handler.postDelayed(this, 1000);
 				return;
 			}
-			if(sBinder.isDownloading()){
-					refreshList();
-					handler.postDelayed(this, 5000);
+			if (sBinder.isDownloading()) {
+				Cursor cur = dbMgr.getUploadItems();
+				listApapter.updateDate(cur);
+				startBtn.setEnabled(false);
+				resetBtn.setEnabled(false);
+				stopBtn.setEnabled(!isStop);
+				handler.postDelayed(this, 1000);
+			} else {
+				startBtn.setEnabled(true);
+				resetBtn.setEnabled(true);
+				stopBtn.setEnabled(false);
+				isStop = false;
 			}
 		}
 	}
 }
-

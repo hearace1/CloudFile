@@ -32,18 +32,27 @@ public class FileUploader implements Runnable {
 	Handler mbUiThreadHandler = null;
 	private static PCSAPI api = null;
 	private boolean isStop = false;
+	private static int threadCnt = 0;
+	private static FileUploader self = null;
 
-	public FileUploader(DBManager dbMgr, Task task, Context context, Handler handler) {
+	private FileUploader(DBManager dbMgr, Task task, Context context, Handler handler) {
 		super();
 		this.dbMgr = dbMgr;
 		this.task = task;
 		this.context = context;
 		this.mbUiThreadHandler = handler;
 	}
+	
+	public static FileUploader getInstance(DBManager dbMgr, Task task, Context context, Handler handler){
+		if(self == null)
+			self = new FileUploader(dbMgr, task, context, handler);
+		return self;
+	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		startThread();
 		String lockerId = String.valueOf(Thread.currentThread().getId());
 
 		if (!isWifiConnected()) {
@@ -64,9 +73,10 @@ public class FileUploader implements Runnable {
 			Log.d("FileUploader", "lock and get the back item:" + bakItem);
 			doUpload(bakItem);
 		}
+		completeThread();
 		Log.d("FileUploader", "Thread " + lockerId + " is completed. alive threads in group:"
-				+ Thread.currentThread().getThreadGroup().activeCount());
-		if (Thread.currentThread().getThreadGroup().activeCount() <= 1)
+				+ threadCnt);
+		if (threadCnt <= 1)
 			task.onComplete();
 	}
 
@@ -183,5 +193,17 @@ public class FileUploader implements Runnable {
 
 	public void setStop(boolean isStop) {
 		this.isStop = isStop;
+	}
+	
+	private synchronized void startThread(){
+		threadCnt++;
+	}
+	
+	private synchronized void completeThread(){
+		threadCnt--;
+	}
+	
+	public boolean isWorking(){
+		return threadCnt > 0;
 	}
 }

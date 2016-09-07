@@ -108,7 +108,7 @@ public class PCSAPI {
 
 	public FileInfo createSuperFile(String md5s, String target) throws Exception {
 
-		String url = fileURL + "?method=createsuperfile";
+		String url = fileURL + "?method=createsuperfile&ondup=overwrite";
 		url = setAccessToken(url);
 		url += "&path=" + URLEncoder.encode(target, "UTF-8");
 		if (md5s != null) {

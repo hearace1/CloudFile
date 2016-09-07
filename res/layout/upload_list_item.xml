@@ -23,10 +23,9 @@
             android:layout_weight="60" />
 
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:layout_weight="40" >
+            android:layout_gravity="right" >
 
             <TextView
                 android:id="@+id/uploadStatus"

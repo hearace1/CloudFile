@@ -20,6 +20,7 @@ import android.util.Log;
 public class CloudService extends Service implements Task {
 	private static final int UPLOAD_FILE_STEP = 2;
 	private static final int RESET_LOCK = 3;
+	private static final int EXIT = -1;
 
 	private DBManager dbMgr = null;
 	private int nextStep = -1;
@@ -97,12 +98,12 @@ public class CloudService extends Service implements Task {
 
 	public void uploadFiles() {
 
-		if (tg.activeCount() < 1) {
+		if (uploader == null || !uploader.isWorking()) {
 			Log.d("CloudService", "kick off upload files");
 			if(uploader == null)
-				uploader = new FileUploader(dbMgr, this, this, handler);
+				uploader = FileUploader.getInstance(dbMgr, this, this, handler);
 			uploader.setStop(false);
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 3; i++) {
 				new Thread(tg, uploader).start();
 				try {
 					Thread.sleep(100);
@@ -125,6 +126,7 @@ public class CloudService extends Service implements Task {
 		Log.d("CloudService", "completed one task");
 		switch (nextStep) {
 		case UPLOAD_FILE_STEP:
+			nextStep = EXIT;
 			Log.d("CloudService", "start upload files");
 			uploadFiles();
 			break;
@@ -141,6 +143,8 @@ public class CloudService extends Service implements Task {
 	}
 
 	public boolean isDownloading() {
-		return tg.activeCount() > 0;
+		if(uploader == null)
+			return false;
+		return uploader.isWorking();
 	}
 }
