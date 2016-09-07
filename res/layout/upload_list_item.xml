@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_launcher" />
+
+<LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
@@ -8,8 +18,9 @@
         android:id="@+id/uploadFileNameTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Medium Text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:lines="3"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,8 +31,9 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="60" />
-
+            android:layout_weight="60"
+            android:minHeight="10dp" />
+		<!--  remove for thumbnail view
         <FrameLayout
             android:layout_width="100dp"
             android:layout_height="match_parent"
@@ -36,7 +48,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
         </FrameLayout>
-
+ 		-->
     </LinearLayout>
 
     <TextView
@@ -55,4 +67,5 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:visibility="gone" />
 
+</LinearLayout>
 </LinearLayout>
