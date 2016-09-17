@@ -77,7 +77,7 @@ public class BackupItemActivity extends Activity {
 
 	private void refreshList() {
 		Cursor cur = dbMgr.getUploadItems();
-		listApapter = new UploadItemListAdapter(this, cur);
+		listApapter = new UploadItemListAdapter(this, cur, uploadFileList);
 		uploadFileList.setAdapter(listApapter);
 	}
 

@@ -2,6 +2,7 @@ package com.hearace.cloudfile.model;
 
 import java.io.File;
 
+import com.hearace.cloudfile.ImageLoader;
 import com.hearace.cloudfile.R;
 
 import android.content.ContentResolver;
@@ -15,22 +16,44 @@ import android.provider.MediaStore.Images.Thumbnails;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class UploadItemListAdapter extends BaseAdapter {
+public class UploadItemListAdapter extends BaseAdapter implements OnScrollListener{
 
 	private Context context = null;
 	private LayoutInflater mInflater = null;
 	private Cursor cur = null;
 	private ContentResolver cr = null;
-	public UploadItemListAdapter(Context context, Cursor cur) {
+	private ImageLoader imageLoader;
+	private ListView mListView;
+	
+	private int mStart;
+	private int mEnd;
+	private boolean isFirstIn;
+	
+	
+	public UploadItemListAdapter(Context context, Cursor cur, ListView listView) {
 		this.context = context;
 		this.mInflater = LayoutInflater.from(context);
 		this.cur = cur;
 		cr = context.getContentResolver();  
+		this.mListView = listView;
+		imageLoader=new ImageLoader(mListView, cr);
+		imageLoader.mUrls = new String[cur.getCount()];
+//		cur.
+		int i=0;
+		while(cur.moveToNext()){
+			String fileName = cur.getString(cur.getColumnIndex("file"));
+			imageLoader.mUrls[i] = fileName;
+			i++;
+		}
+		mListView.setOnScrollListener(this);
 	}
 
 	@Override
@@ -90,9 +113,13 @@ public class UploadItemListAdapter extends BaseAdapter {
 		String fileName = cur.getString(cur.getColumnIndex("file"));
 		viewHolder.fileNameTextView.setText(fileName);
 		viewHolder.fileId.setText(String.valueOf(fileId));
-		Bitmap thumbnail = getThumbnail(fileName);
-		if(thumbnail != null)
-			viewHolder.thumbnail.setImageBitmap(thumbnail);
+		viewHolder.thumbnail.setTag(fileName);
+		viewHolder.thumbnail.setImageResource(R.drawable.ic_launcher);
+		imageLoader.showImage(viewHolder.thumbnail,fileName);
+//		Bitmap thumbnail = getThumbnail(fileName);
+//		if(thumbnail != null)
+//			viewHolder.thumbnail.setImageBitmap(thumbnail);
+		
 
 		int status = cur.getInt(cur.getColumnIndex("status"));
 		int progressPercent = 0;
@@ -148,6 +175,29 @@ public class UploadItemListAdapter extends BaseAdapter {
 		TextView errMsgTextView;
 		TextView fileId;
 		ImageView thumbnail;
+	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		// TODO Auto-generated method stub
+		if(scrollState==SCROLL_STATE_IDLE){
+			imageLoader.loadImages(mStart,mEnd);
+		}else{
+			imageLoader.cancelAllAsyncTask();
+		}
+	}
+
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+		// TODO Auto-generated method stub
+		mStart=firstVisibleItem;
+		mEnd=firstVisibleItem+visibleItemCount;
+		
+		if(isFirstIn&&visibleItemCount>0){
+			imageLoader.loadImages(mStart,mEnd);
+			isFirstIn=false;
+		}
+		
 	}
 }
 
