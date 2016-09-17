@@ -86,6 +86,13 @@ public class UploadItemListAdapter extends BaseAdapter implements OnScrollListen
 	
 	public void updateDate(Cursor cur){
 		this.cur = cur;
+		imageLoader.mUrls = new String[cur.getCount()];
+		int i=0;
+		while(cur.moveToNext()){
+			String fileName = cur.getString(cur.getColumnIndex("file"));
+			imageLoader.mUrls[i] = fileName;
+			i++;
+		}
 		this.notifyDataSetChanged();
 	}
 
