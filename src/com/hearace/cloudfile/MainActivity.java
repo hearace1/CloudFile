@@ -14,6 +14,7 @@ import com.hearace.cloudfile.service.PollingUtils;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -49,6 +50,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener, O
 	private String mbOauth = null;
 	private AppConfig config = null;
 	private boolean enabledService;
+	private Context context = this;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +114,13 @@ public class MainActivity extends Activity implements OnCheckedChangeListener, O
 							Toast.makeText(getApplicationContext(),
 									"Token: " + mbOauth + "    User name:" + response.getUserName(), Toast.LENGTH_SHORT)
 									.show();
+							DBManager dbMgr = DBManager.getInstance(context);
+							if(dbMgr.getAllPath().getCount()==0){
+								
+							}
 							config.setUserName(response.getUserName());
-							config.setServerToken(response.getAccessToken());
+							config.setServerToken(response.getAccessToken());								
+							
 							fillData();
 						}
 					}

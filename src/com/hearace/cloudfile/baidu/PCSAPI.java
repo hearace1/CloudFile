@@ -2,7 +2,9 @@ package com.hearace.cloudfile.baidu;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.*;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
@@ -83,6 +86,49 @@ public class PCSAPI {
 		else {
 			ErrorMsg err = JSONUtil.getErrorMsg(response.getContent());
 			throw new Exception("Failed to upload file:\n" + err.getError() + "\n" + err.getError_desc());
+		}
+		return fileInfo;
+	}
+	
+	public boolean downloadFile(String remotePath, String localPath) throws Exception{
+		String url = fileURL + "?method=download&path="+URLEncoder.encode(remotePath, "UTF-8");
+		url = setAccessToken(url);
+		HttpResponse response = HttpClientUtil.Get(url, null, true);
+		if(response == null)
+			return false;
+		if(response.getCode() == 200){
+			FileOutputStream fos = new FileOutputStream(localPath);
+			InputStream is = response.getInputStream();
+			if(fos != null && is != null){
+				byte[] buffer = new byte[51200];
+				int count = 0;
+				try {
+					while((count = is.read(buffer)) > 0){
+						fos.write(buffer, 0, count);
+					}
+				} finally {
+					fos.close();
+				}
+			}
+		}else {
+			ErrorMsg err = JSONUtil.getErrorMsg(response.getContent());
+			throw new Exception("Failed to get meta file:\n" + err.getError() + "\n" + err.getError_desc());
+		}
+		return true;
+	}
+	
+	public FileInfo getFileMeta(String remotePath) throws Exception{
+		String url = fileURL + "?method=meta&path="+URLEncoder.encode(remotePath, "UTF-8");
+		url = setAccessToken(url);
+		HttpResponse response = HttpClientUtil.Get(url);
+		if (response == null)
+			return null;
+		FileInfo fileInfo = null;
+		if (response.getCode() == 200)
+			fileInfo = JSONUtil.parseFileInfo(response.getContent());
+		else {
+			ErrorMsg err = JSONUtil.getErrorMsg(response.getContent());
+			throw new Exception("Failed to get meta file:\n" + err.getError() + "\n" + err.getError_desc());
 		}
 		return fileInfo;
 	}

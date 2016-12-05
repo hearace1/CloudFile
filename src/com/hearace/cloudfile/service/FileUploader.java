@@ -1,8 +1,10 @@
 package com.hearace.cloudfile.service;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.math.BigInteger;
@@ -76,8 +78,10 @@ public class FileUploader implements Runnable {
 		completeThread();
 		Log.d("FileUploader", "Thread " + lockerId + " is completed. alive threads in group:"
 				+ threadCnt);
-		if (threadCnt <= 1)
+		if (threadCnt <= 1){
+			backupDB();
 			task.onComplete();
+		}
 	}
 
 	private synchronized PCSAPI getAPI() throws Exception {
@@ -103,25 +107,45 @@ public class FileUploader implements Runnable {
 		return false;
 	}
 
+	private int backupDB(){
+		String target = AppDefine.mbRootPath + AppConfig.getInstance(dbMgr).getDeviceName() + File.separator
+				+ "configure.cf";
+		String dbPath = "/data/data/com.hearace.cloudfile/databases/cloudfile.db";
+		File dbFile = new File(dbPath);
+		if(!dbFile.exists())
+			return -1;
+		try {
+			Log.d("FileUploader", "db size:"+dbFile.length());
+			api.uploadFile(target,dbPath);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 1;
+	}
+	
 	private int doUpload(BackupItem item) {
 		Log.d("FileUploader", "Start upload item:" + item.toString());
-		File f = new File(item.getFileStr());
+		File uploadFile = new File(item.getFileStr());
 		String target = AppDefine.mbRootPath + AppConfig.getInstance(dbMgr).getDeviceName() + File.separator
 				+ item.getCloudpath();
 		if (!target.endsWith(File.separator)) {
 			target = target + File.separator;
 		}
-		target = target + f.getName();
+		target = target + uploadFile.getName();
 		Log.d("FileUploader", "upload to:" + target);
-		if (f.length() > 1024 * 1024) {
+		if (uploadFile.length() > 1024 * 1024) {
 			Log.d("FileUploader", "upload item in pieces");
 			try {
-				RandomAccessFile accFile = new RandomAccessFile(f, "r");
+				RandomAccessFile accFile = new RandomAccessFile(uploadFile, "r");
 				long pos = item.getProgress();
-				int bufferSize = 1 + (int) (f.length() / (1024 * 1024 * 1024));
+				int bufferSize = 1 + (int) (uploadFile.length() / (1024 * 1024 * 1024));
 				bufferSize = bufferSize * 1024 * 1024;
 				byte[] buff = new byte[bufferSize];
-				while (pos < f.length()) {
+				while (pos < uploadFile.length()) {
 					accFile.seek(pos);
 					int i = accFile.read(buff);
 					pos += i;

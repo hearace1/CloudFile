@@ -16,7 +16,7 @@ import android.util.Log;
 
 public class HttpClientUtil {
 
-	public static HttpResponse Get(String urlStr, Map<String, String> headers) throws IOException{
+	public static HttpResponse Get(String urlStr, Map<String, String> headers, boolean withContentStream) throws IOException{
 		URL url = new URL(urlStr);
 		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 		conn.setRequestMethod("GET");
@@ -30,7 +30,12 @@ public class HttpClientUtil {
 		conn.setDoOutput(false);
 		try {
 			InputStream in = new BufferedInputStream(conn.getInputStream());
-			return new HttpResponse(conn.getResponseCode(), readContent(conn.getInputStream()));
+			if(withContentStream){
+				return new HttpResponse(conn.getResponseCode(), conn.getHeaderFields(), conn.getInputStream());
+			}else{
+				return new HttpResponse(conn.getResponseCode(), conn.getHeaderFields(), readContent(conn.getInputStream()));				
+			}
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,7 +48,7 @@ public class HttpClientUtil {
 	}
 	
 	public static HttpResponse Get(String URL) throws IOException{
-		return Get(URL, null);
+		return Get(URL, null, false);
 	}
 	
 	public static HttpResponse multipost(String urlString, MultipartEntity reqEntity) throws Exception {
@@ -67,7 +72,7 @@ public class HttpClientUtil {
             os.close();
             conn.connect();
 
-            return new HttpResponse(conn.getResponseCode(), readContent(conn.getInputStream()));
+            return new HttpResponse(conn.getResponseCode(), conn.getHeaderFields(), readContent(conn.getInputStream()));
 
         } catch (Exception e) {
         	e.printStackTrace();
