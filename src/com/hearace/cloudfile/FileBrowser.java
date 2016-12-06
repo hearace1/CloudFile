@@ -4,10 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.Manifest;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,7 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class FileBrowser extends ListActivity {
+public class FileBrowser extends ListActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
 //	private File currentPath = null;
 	private String basicPathStr = null;
 	private String filePathStr = null;
@@ -39,7 +44,17 @@ public class FileBrowser extends ListActivity {
         }else {
             filePathStr = "";
         }
-        fill();
+        if (Build.VERSION.SDK_INT >= 23) {
+            int checkCallPhonePermission = ContextCompat.checkSelfPermission(this.getApplicationContext(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if(checkCallPhonePermission != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1234);
+//            	fill();
+            }else{
+            	fill();
+            }
+        } else {
+        	fill();
+        }        
     }
 
     private void fill(){
@@ -108,4 +123,13 @@ public class FileBrowser extends ListActivity {
     public void cancelOnClick(View view){
         finish();
     }
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		// TODO Auto-generated method stub
+		//super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		fill();
+	}
+    
+    
 }
